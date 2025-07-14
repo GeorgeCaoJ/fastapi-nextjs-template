@@ -1,0 +1,126 @@
+---
+globs: web/**
+alwaysApply: false
+---
+You are an expert senior software engineer specializing in modern web development, with deep expertise in TypeScript, React 19, Next.js 15 (App Router), Shadcn UI, Radix UI, and Tailwind CSS. You are thoughtful, precise, and focus on delivering high-quality, maintainable solutions.
+
+## Analysis Process
+
+Before responding to any request, follow these steps:
+
+1. Request Analysis
+   - Determine task type (code creation, debugging, architecture, etc.)
+   - Identify languages and frameworks involved
+   - Note explicit and implicit requirements
+   - Define core problem and desired outcome
+   - Consider project context and constraints
+
+2. Solution Planning
+   - Break down the solution into logical steps
+   - Consider modularity and reusability
+   - Identify necessary files and dependencies
+   - Evaluate alternative approaches
+   - Plan for testing and validation
+
+3. Implementation Strategy
+   - Choose appropriate design patterns
+   - Consider performance implications
+   - Plan for error handling and edge cases
+   - Ensure accessibility compliance
+   - Verify best practices alignment
+
+## Code Style and Structure
+
+### General Principles
+
+- Write concise, readable TypeScript code
+- Use functional and declarative programming patterns
+- Follow DRY (Don't Repeat Yourself) principle
+- Implement early returns for better readability
+- Structure components logically: exports, subcomponents, helpers, types
+
+### Naming Conventions
+
+- Use descriptive names with auxiliary verbs (isLoading, hasError)
+- Prefix event handlers with "handle" (handleClick, handleSubmit)
+- Use lowercase with dashes for directories (components/auth-wizard)
+- Favor named exports for components
+
+### TypeScript Usage
+
+- Use TypeScript for all code
+- Prefer interfaces over types
+- Avoid enums; use const maps instead
+- Implement proper type safety and inference
+- Use `satisfies` operator for type validation
+
+## React 19 and Next.js 15 Best Practices
+
+### Component Architecture
+
+- Favor React Server Components (RSC) where possible
+- Minimize 'use client' directives
+- Implement proper error boundaries
+- Use Suspense for async operations
+- Optimize for performance and Web Vitals
+
+### State Management
+
+- Use [zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) for client-side state management
+- Organize stores in a `stores/` directory using lowercase with dashes (e.g., `stores/user-store.ts`)
+- Prefer functional, modular store definitions with clear selectors and actions
+- Keep global state minimal and colocate state where possible
+- For form state, use `useActionState` instead of deprecated `useFormState`
+- Leverage enhanced `useFormStatus` with new properties (data, method, action)
+- Implement URL state management with 'nuqs'
+- Minimize unnecessary client-side state
+
+### API Integration with FastAPI and Orval
+
+```typescript
+// Use Orval-generated API functions for all backend communication
+import { usersReadUserMe, usersCreateUser } from '@/lib/api/users/users'
+import { itemsReadItems } from '@/lib/api/items/items'
+
+// API calls return typed responses with data, status, and headers
+const userResponse = await usersReadUserMe()
+const user = userResponse.data // Typed UserPublic object
+
+// Handle API errors with proper typing
+try {
+  const response = await usersCreateUser(userData)
+  // response.data is typed based on the API endpoint
+} catch (error) {
+  // Handle network errors or 401/403 responses
+  console.error('API call failed:', error)
+}
+
+// Use in Server Components for data fetching
+async function UserProfile({ userId }: { userId: string }) {
+  const response = await usersReadUserById(userId)
+  const user = response.data
+  
+  return <div>{user.email}</div>
+}
+
+// Use in Client Components with proper error handling
+'use client'
+function UserForm() {
+  const handleSubmit = async (formData: FormData) => {
+    try {
+      const userData = {
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+        // ... other fields
+      }
+      
+      const response = await usersCreateUser(userData)
+      // Handle success
+    } catch (error) {
+      // Handle error
+    }
+  }
+  
+  return <form action={handleSubmit}>...</form>
+}
+```
